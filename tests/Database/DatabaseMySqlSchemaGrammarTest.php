@@ -279,6 +279,16 @@ class DatabaseMySqlSchemaGrammarTest extends TestCase
         $this->assertEquals('rename table `users` to `foo`', $statements[0]);
     }
 
+    public function testRenameIndex()
+    {
+        $blueprint = new Blueprint('users');
+        $blueprint->renameIndex('foo', 'bar');
+        $statements = $blueprint->toSql($this->getConnection(), $this->getGrammar());
+
+        $this->assertCount(1, $statements);
+        $this->assertEquals('alter table `users` rename index `foo` to `bar`', $statements[0]);
+    }
+
     public function testAddingPrimaryKey()
     {
         $blueprint = new Blueprint('users');
@@ -929,6 +939,25 @@ class DatabaseMySqlSchemaGrammarTest extends TestCase
         $statement = $this->getGrammar()->compileDropAllTables(['alpha', 'beta', 'gamma']);
 
         $this->assertEquals('drop table `alpha`,`beta`,`gamma`', $statement);
+    }
+
+    public function testDropAllViews()
+    {
+        $statement = $this->getGrammar()->compileDropAllViews(['alpha', 'beta', 'gamma']);
+
+        $this->assertEquals('drop view `alpha`,`beta`,`gamma`', $statement);
+    }
+
+    public function testGrammarsAreMacroable()
+    {
+        // compileReplace macro.
+        $this->getGrammar()::macro('compileReplace', function () {
+            return true;
+        });
+
+        $c = $this->getGrammar()::compileReplace();
+
+        $this->assertTrue($c);
     }
 
     protected function getConnection()
