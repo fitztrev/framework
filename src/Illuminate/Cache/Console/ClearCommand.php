@@ -22,7 +22,7 @@ class ClearCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Flush the application cache';
+    protected $description = 'Flush the application cache and facades';
 
     /**
      * The cache manager instance.
@@ -95,6 +95,8 @@ class ClearCommand extends Command
                 $this->files->delete($file);
             }
         }
+
+        $this->info('Facades flushed!');
     }
 
     /**
